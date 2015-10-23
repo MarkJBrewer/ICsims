@@ -14,7 +14,7 @@
 #' LazyLoad: \tab yes\cr
 #' }
 #'
-#' \code{\link{simulation study}} is the main workhorse for simulation
+#' \code{\link{simulation.study}} is the main workhorse for simulation
 #'
 #' @name ICsims-package
 #' @aliases ICsims

@@ -63,8 +63,14 @@
 #' @param binomial.n If fitting a binomial GLM, the number of trials per sample. Must be
 #' either a scalar (in which case the same number of trials are used for each sample) or a
 #' vector of length nsamples. (Default is 1)
-#' @return If \code{keep.dredge==TRUE}, the output is a list of length equal to the length
-#' of nsamples, each TO FINISH
+#' @return If \code{keep.dredge==FALSE} (the default), the output is a list of length equal to the length
+#' of nsamples, each containing two matrices, \code{reg.bias} (prediction bias for each
+#' sample) and \code{reg.rmse} (root mean square error of prediction for each sample). Each
+#' of these two matrices has length \code{nsims} and four columns, corresponding to model 
+#' selection by AICc, AIC, BIC and stepwise regression. If \code{keep.dredge==TRUE}, then the output
+#' is a list of lists, with a top level list with length equal to the length of nsamples as before, and
+#' with the next level having length equal to \code{nsims}; this inner list contains the full model set
+#' output from \code{dredge}, converted to a matrix for storage efficiency.
 #' @export
 simulation.study <- function(type="lm",nsims=1000,
     nsamples=c(20,50,100,200,500,1000,2000,5000,10000),
@@ -192,6 +198,9 @@ simulation.study <- function(type="lm",nsims=1000,
     results <- list()
     for(i in 1:n.sample.sizes){
         print(date())
+        if(keep.dredge){
+            dredge.out[[i]] <- list()
+        }
         n <- nsamples[i]
         all.x.names <- paste("x.",1:nX,sep="")
         z.names <- paste("z.",1:nZ,sep="")
@@ -258,7 +267,7 @@ simulation.study <- function(type="lm",nsims=1000,
                     reg.model <- glm(reg.eqn,family=glm.family,offset=glm.offset,data=reg.data)
                 }
             }
-            reg.dredge <<- dredge(reg.model,extra=c("AIC","BIC"))
+            reg.dredge <- dredge(reg.model,extra=c("AIC","BIC"))
             capture.output(reg.stepwise <- step(reg.model,k=step.k))
             # Get second, test set
             x.sim <- rnorm(nX,meanX,sdmeanX)
@@ -305,17 +314,17 @@ simulation.study <- function(type="lm",nsims=1000,
             }else{
                 y.calc <- y.new
             }
-            reg.best <- get.models(reg.dredge,subset=which.min(reg.dredge$AICc))[[1]]
+            reg.best <- get.models(reg.dredge,subset=which.min(AICc))[[1]]
             reg.preds[,1] <- predict(reg.best,newdata=newdata,type="response")
-            reg.best <- get.models(reg.dredge,subset=which.min(reg.dredge$AIC))[[1]]
+            reg.best <- get.models(reg.dredge,subset=which.min(AIC))[[1]]
             reg.preds[,2] <- predict(reg.best,newdata=newdata,type="response")
-            reg.best <- get.models(reg.dredge,subset=which.min(reg.dredge$BIC))[[1]]
+            reg.best <- get.models(reg.dredge,subset=which.min(BIC))[[1]]
             reg.preds[,3] <- predict(reg.best,newdata=newdata,type="response")
             reg.preds[,4] <- predict(reg.stepwise,newdata=newdata,type="response")
             reg.bias[j,] <- colMeans(reg.preds-y.calc)
             reg.rmse[j,] <- sqrt(colMeans((reg.preds-y.calc)^2))
             if(keep.dredge){
-                capture.output(dredge.out[[j]] <- as.matrix(model.sel(reg.dredge,rank=rmse.calc,rank.args=list(newdata=newdata,y=y.calc),extra=alist(AICc,AIC,BIC))))
+                capture.output(dredge.out[[i]][[j]] <- as.matrix(model.sel(reg.dredge,rank=rmse.calc,rank.args=list(newdata=newdata,y=y.calc),extra=alist(AICc,AIC,BIC))))
             }
         }
         options(na.action = "na.omit")

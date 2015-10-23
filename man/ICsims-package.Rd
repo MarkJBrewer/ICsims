@@ -23,7 +23,7 @@ License: \tab GPL (>= 2)\cr
 LazyLoad: \tab yes\cr
 }
 
-\code{\link{simulation study}} is the main workhorse for simulation
+\code{\link{simulation.study}} is the main workhorse for simulation
 }
 \author{
 Mark J Brewer \email{Mark.Brewer@bioss.ac.uk}

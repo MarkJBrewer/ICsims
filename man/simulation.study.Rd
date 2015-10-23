@@ -103,8 +103,14 @@ vector of length nsamples. (Default is 1)}
 \item{filename}{Character string providing the root for the output files}
 }
 \value{
-If \code{keep.dredge==TRUE}, the output is a list of length equal to the length
-of nsamples, each TO FINISH
+If \code{keep.dredge==FALSE} (the default), the output is a list of length equal to the length
+of nsamples, each containing two matrices, \code{reg.bias} (prediction bias for each
+sample) and \code{reg.rmse} (root mean square error of prediction for each sample). Each
+of these two matrices has length \code{nsims} and four columns, corresponding to model
+selection by AICc, AIC, BIC and stepwise regression. If \code{keep.dredge==TRUE}, then the output
+is a list of lists, with a top level list with length equal to the length of nsamples as before, and
+with the next level having length equal to \code{nsims}; this inner list contains the full model set
+output from \code{dredge}, converted to a matrix for storage efficiency.
 }
 \description{
 \code{simulation.study} implements a simulation framework sampling repeatedly
