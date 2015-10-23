@@ -1,0 +1,8 @@
+Package: ICsims
+Title: Simulation framework allowing for between-sample heterogeneity in GLMs
+Version: 0.1.1
+Authors@R: "Mark J Brewer <mark.brewer@bioss.ac.uk> [aut, cre]"
+Description: Simulation framework allowing for between-sample heterogeneity in GLMs.
+Depends: MASS, MuMIn
+License: GPL-2 | GPL-3
+LazyData: true
