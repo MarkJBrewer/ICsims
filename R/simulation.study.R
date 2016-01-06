@@ -59,7 +59,9 @@
 #' (to the standard family argument to glm).
 #' @param glm.offset An (optional) offset can be supplied if fitting a GLM. (Not
 #' currently implemented.)
-#' @param filename Character string providing the root for the output files
+#' @param filename Character string providing the root for the output files. Intermediate files are
+#' saved as "filenameX.RData" where X is an incremental count from 1 to length(nsamples). The final
+#' output is in "filename.RData".
 #' @param binomial.n If fitting a binomial GLM, the number of trials per sample. Must be
 #' either a scalar (in which case the same number of trials are used for each sample) or a
 #' vector of length nsamples. (Default is 1)
@@ -332,8 +334,9 @@ simulation.study <- function(type="lm",nsims=1000,
 
         results[[i]] <- list(reg.bias,reg.rmse)
         names(results[[i]]) <- c("reg.bias","reg.rmse")
-        save(results,file=paste(filename,i,".RData",sep=""))
+        save(results[[i]],file=paste(filename,i,".RData",sep=""))
     }
+    save(results,file=paste(filename,".RData",sep=""))
     if(keep.dredge){
         return(dredge.out)
     }else{
